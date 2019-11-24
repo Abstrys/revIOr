@@ -1,9 +1,5 @@
 # revIOr
 
-> We were jocular about jOculus. Now we're... pyoculiar!
->
-> – an Abstrysism.
-
 **revIOr** is the evolutionary successor to my older project, [jOculus][]. It is a light-text-markup
 viewer with built-in support for [Markdown][] and [reStructuredText][], and supports other text
 processors through its ability to use arbitrary command-line processors on your source files (it
