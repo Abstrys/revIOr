@@ -1,10 +1,11 @@
 # revIOr_window: contains the RevIOrWindow class.
-import sys, os
+import sys, os, subprocess
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import WebKit2
 from abstrys.app_settings import AppSettings
+from abstrys.revIOr.prefs_dialog import RevIOrPrefsDialog
 
 DEFAULT_CONTENTS = """
 <head>
@@ -28,8 +29,19 @@ DEFAULT_CONTENTS = """
 </body>
 """
 
+ABOUT_TEXT = """
+A reStructuredText and Markdown reviewer.
+
+by Eron Hennessey <eronh@abstrys.com>
+
+http://github.com/Abstrys/revIOr
+
+Provided free of use under the terms of the BSD
+license.
+"""
+
 APP_NAME = 'revIOr'
-DEFAULT_STYLESHEET_DIR = '~/%s/css'
+DEFAULT_STYLESHEET_DIR = '~/.%s/css' % APP_NAME
 
 class RevIOrWindow(Gtk.Window):
     """The main RevIOr window."""
@@ -72,11 +84,11 @@ class RevIOrWindow(Gtk.Window):
         """
         stylesheet_dir_path = self.settings.get('stylesheet_dir')
         if stylesheet_dir_path is None:
-            stylesheet_dir_path = os.path.join(self.settings.check_settings_dir(), DEFAULT_STYLESHEET_DIR)
+            stylesheet_dir_path = os.path.join(self.settings.check_settings_dir(), 'css')
             # create the directory and populate it if the dir doesn't exist.
             if not os.path.isdir(stylesheet_dir_path):
                 import pkg_resources, shutil
-                css_src_dir = pkg_resources.resource_filename(stylesheet_dir_path)
+                css_src_dir = pkg_resources.resource_filename('abstrys.revIOr', 'css')
                 shutil.copytree(css_src_dir, stylesheet_dir_path)
         return stylesheet_dir_path
 
@@ -127,21 +139,21 @@ class RevIOrWindow(Gtk.Window):
 
         tb.insert(self.create_expanding_separator(), -1)
 
-        tb.insert(self.create_stock_toolbar_button('gtk-zoom-out',
-            self.cmd_zoom_out, "Zoom out of the display (decrease text/image size)"), -1)
+        tb.insert(self.create_stock_toolbar_button('gtk-zoom-out', self.cmd_zoom_out,
+            "Zoom out of the display (decrease text/image size)"), -1)
 
         tb.insert(self.create_zoom_level_label(), -1)
 
-        tb.insert(self.create_stock_toolbar_button('gtk-zoom-in',
-            self.cmd_zoom_in, "Zoom into the display (increase text/image size)."), -1)
+        tb.insert(self.create_stock_toolbar_button('gtk-zoom-in', self.cmd_zoom_in,
+            "Zoom into the display (increase text/image size)."), -1)
 
         tb.insert(self.create_expanding_separator(), -1)
 
-        tb.insert(self.create_stock_toolbar_button('gtk-page-setup',
-            self.cmd_choose_stylesheet, "Choose a stylesheet"), -1)
+        tb.insert(self.create_stock_toolbar_button('gtk-page-setup', self.cmd_choose_stylesheet,
+            "Choose a stylesheet"), -1)
 
-        tb.insert(self.create_stock_toolbar_button('gtk-preferences',
-            self.cmd_set_preferences, "Set preferences"), -1)
+        tb.insert(self.create_stock_toolbar_button('gtk-preferences', self.cmd_set_preferences,
+            "Set preferences"), -1)
 
         tb.insert(self.create_stock_toolbar_button('gtk-about', self.cmd_show_about,
             "About %s" % APP_NAME), -1)
@@ -171,15 +183,10 @@ class RevIOrWindow(Gtk.Window):
     def set_window_size_pos(self):
         # if the user has a different window size that's preferred, use that.
         window_size = [425, 550] # 8.5x11 aspect ratio
-        if 'width' in self.settings.keys():
-            set_width = self.settings.get('width')
-            if window_size[0] < set_width:
-                window_size[0] = set_width
-        if 'height' in self.settings.keys():
-            set_height = self.settings.get('height')
-            if window_size[1] < set_height:
-                window_size[1] = set_height
-        self.set_default_size(window_size[0], window_size[1])
+        set_width = self.settings.get('width', window_size[0])
+        set_height = self.settings.get('height', window_size[1])
+        self.set_default_size(set_width, set_height)
+        self.settings.update({'width': set_width, 'height': set_height})
 
 
     def set_contents(self, html_text):
@@ -198,7 +205,7 @@ class RevIOrWindow(Gtk.Window):
                     Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         tf = Gtk.FileFilter()
         tf.set_name('Text files')
-        tf.add_mime_type('text')
+        tf.add_mime_type('text/plain')
         tf.add_pattern('*.rst')
         tf.add_pattern('*.md')
         tf.add_pattern('*.txt')
@@ -216,10 +223,26 @@ class RevIOrWindow(Gtk.Window):
 
     def cmd_edit_file(self, widget):
         print("Edit File button pressed!")
+        if self.oculus.cur_file_path == None:
+            dlg = Gtk.MessageDialog(self, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Whoah, there.")
+            dlg.format_secondary_text("No file is currently loaded! Can't edit nothin'...!")
+            dlg.run()
+            dlg.destroy()
+        else:
+            if hasattr(os, 'startfile'):
+                    os.startfile(self.oculus.cur_file_path)
+            elif sys.platform == 'linux':
+                    subprocess.call(['xdg-open', self.oculus.cur_file_path])
+            elif sys.platform == 'darwin':
+                    subprocess.call(['open', self.oculus.cur_file_path]) 
 
 
     def cmd_show_about(self, widget):
         print("About button pressed!")
+        dlg = Gtk.MessageDialog(self, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "About revIOr")
+        dlg.format_secondary_text(ABOUT_TEXT)
+        dlg.run()
+        dlg.destroy()
 
 
     def cmd_choose_stylesheet(self, widget):
@@ -240,12 +263,15 @@ class RevIOrWindow(Gtk.Window):
         dlg.set_current_folder(stylesheet_dir_path)
         response = dlg.run()
         if response == Gtk.ResponseType.OK:
-            self.oculus.set_file(dlg.get_filename())
+            self.settings['stylesheet'] = dlg.get_filename()
         dlg.destroy()
 
 
     def cmd_set_preferences(self, widget):
         print("Edit Preferences button pressed!")
+        dlg = RevIOrPrefsDialog(self, self.settings)
+        response = dlg.run()
+        dlg.destroy()
 
 
     def cmd_zoom_out(self, widget):
@@ -285,4 +311,5 @@ class RevIOrWindow(Gtk.Window):
             self.cmd_zoom_in(None)
         elif keyname == 'equal':
             self.cmd_zoom_normal(None)
+
 

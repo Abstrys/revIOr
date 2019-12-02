@@ -56,7 +56,7 @@ docs/_build/
 *.swp
 
 # in case someone makes a symlink
-revIOr
+./revIOr
 
 # if someone's using PyCharm...
 .idea/

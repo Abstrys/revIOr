@@ -1,5 +1,5 @@
 ################
-restructuredTest
+reStructuredTest
 ################
 
 **On this page**
@@ -10,7 +10,7 @@ restructuredTest
 The basics
 ==========
 
-This is a reStructuredText file!
+This is a reStructuredText_ file!
 
 I can put a table here:
 
@@ -39,6 +39,7 @@ default.
     This is a quote.
 
 
-THis is more text in the file.
+This is more text in the file.
 
+.. _restructuredtext: http://docutils.sourceforge.net/rst.html
 
