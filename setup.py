@@ -16,6 +16,6 @@ setup(
         'console_scripts' : ['revIOr = abstrys.revIOr.app:main'],
         'setuptools.installation': ['eggsecutable = abstrys.revIOr.app:main']
         },
-    install_requires = ['docutils', 'commonmark', 'PyGObject']
+    install_requires = ['docutils', 'commonmark', 'PyGObject', 'abstrys-core']
 )
 
