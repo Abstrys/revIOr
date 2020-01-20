@@ -74,6 +74,7 @@ class RevIOrWindow(Gtk.Window):
         self.setup_toolbar()
         self.set_window_size_pos()
         self.connect('key_press_event', self.on_key_press_event)
+        self.connect('delete_event', self.delete_event)
 
 
     def check_stylesheet_dir(self):
@@ -94,7 +95,9 @@ class RevIOrWindow(Gtk.Window):
 
                     
     def close(self):
+        print("close() called!")
         self.settings.save()
+        print("settings saved.")
 
 
     def create_stock_toolbar_button(self, stock_item_id, button_handler,
@@ -181,12 +184,17 @@ class RevIOrWindow(Gtk.Window):
 
 
     def set_window_size_pos(self):
-        # if the user has a different window size that's preferred, use that.
-        window_size = [425, 550] # 8.5x11 aspect ratio
-        set_width = self.settings.get('width', window_size[0])
-        set_height = self.settings.get('height', window_size[1])
-        self.set_default_size(set_width, set_height)
-        self.settings.update({'width': set_width, 'height': set_height})
+        # Default to a 425 x 550 window size (it's equivalent to an 8.5/11 ratio).
+        # if the user has a different window size that's preferred, use that, however.
+        default_window_size = [425, 550] # 8.5x11 aspect ratio
+        w = self.settings.get('start_width', default_window_size[0])
+        h = self.settings.get('start_height', default_window_size[1])
+        self.settings.update({'start_width': w, 'start_height': h})
+        self.set_default_size(w, h)
+        # *Only* set the position if the save_window_pos setting is True.
+        if self.settings.get('save_window_pos', False):
+            if (self.settings.get('start_x', 0) != 0) and (self.settings.get('start_y', 0) != 0):
+                self.move(self.settings['start_x'], self.settings['start_y'])
 
 
     def set_contents(self, html_text):
@@ -229,12 +237,15 @@ class RevIOrWindow(Gtk.Window):
             dlg.run()
             dlg.destroy()
         else:
-            if hasattr(os, 'startfile'):
-                    os.startfile(self.oculus.cur_file_path)
+            editor = self.settings.get('text_editor', None)
+            if editor != None:
+                subprocess.call([editor, self.oculus.cur_file_path])
+            elif hasattr(os, 'startfile'):
+                os.startfile(self.oculus.cur_file_path)
             elif sys.platform == 'linux':
-                    subprocess.call(['xdg-open', self.oculus.cur_file_path])
+                subprocess.call(['xdg-open', self.oculus.cur_file_path])
             elif sys.platform == 'darwin':
-                    subprocess.call(['open', self.oculus.cur_file_path]) 
+                subprocess.call(['open', self.oculus.cur_file_path]) 
 
 
     def cmd_show_about(self, widget):
@@ -271,7 +282,15 @@ class RevIOrWindow(Gtk.Window):
         print("Edit Preferences button pressed!")
         dlg = RevIOrPrefsDialog(self, self.settings)
         response = dlg.run()
+        print("dlg.run() returned")
+        if response == Gtk.ResponseType.OK:
+            print("dlg response: OK")
+            self.settings = dlg.update_settings()
+        else:
+            print("dlg response: *not* OK")
         dlg.destroy()
+        print("dlg.destroy() called")
+        
 
 
     def cmd_zoom_out(self, widget):
@@ -312,4 +331,21 @@ class RevIOrWindow(Gtk.Window):
         elif keyname == 'equal':
             self.cmd_zoom_normal(None)
 
+
+    def delete_event(self, widget, event):
+        """
+        This is the last chance to get info about the window before it's destroyed.
+        Doing this at close() is too late!
+        """
+        print("delete_event() called!")
+        if self.settings.get('save_window_pos', False):
+           (x, y) = self.get_position()
+           print("saving window position: (%s, %s)" % (x, y))
+           self.settings['start_x'] = x
+           self.settings['start_y'] = y
+        if self.settings.get('save_window_size', False):
+           (w, h) = self.get_size() 
+           print("saving window size: (%s, %s)" % (w, h))
+           self.settings['start_width'] = w
+           self.settings['start_height'] = h
 

@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="revIOr",
-    version="0.1",
+    version="0.2",
     author="Eron Hennessey",
     author_email="eron@abstrys.com",
     description="An auto-updating HTML window for reStructuredText, Markdown and more.",
