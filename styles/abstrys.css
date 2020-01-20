@@ -1,0 +1,211 @@
+/* CSS for abstrys.com
+ *
+ * Note: the base settings are designed around a mobile (small-screen) presentation. Desktop
+ * configuration is in the "responsive behavior" section near the end of this file.
+ * */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #242424;
+    color: #F6F3E8;
+    overflow: auto;
+    font-family: 'Noto Serif', serif;
+    font-size: 16px;
+}
+
+.document {
+    background-color: #0F0F0F;
+}
+
+/* The main column */
+.bodywrapper {
+    width: 100%;
+    margin-left: 10px;
+    margin-bottom: 32px;
+    padding: 10px;
+}
+
+/* The main sidebar */
+.sphinxsidebar {
+    width: 100%;
+    padding: 10px;
+    margin-right: 10px;
+}
+
+pre {
+    margin: 0px;
+}
+
+div.highlight, pre.literal-block {
+    padding: 16px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 16px;
+    background-color: #0F0F0F;
+    overflow: auto;
+}
+
+code {
+    background-color: #0F0F0F;
+}
+
+span.pre {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 16px;
+}
+
+em span.pre {
+    color: #cae682;
+}
+
+img {
+    margin: 8px;
+    padding: 8px;
+    background: black;
+}
+
+h1 {
+    font-size: 32px;
+    color: #8AC6F2 !important;
+    font-family: 'Quando', fantasy;
+    padding: 14px;
+    margin-top: 0px;
+    margin-bottom: 22px;
+    background: #0F0F0F;
+    border-radius: 14px;
+    border: 1px solid #A4A4A4;
+}
+
+h2, h3, h4, h5 {
+    color: #8AC6F2 !important;
+    font-family: 'Quando', fantasy;
+}
+
+a:link, a:visited, a:active {
+    color: #80a0ff;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #e1984a;
+}
+
+a.toc-backref {
+    color: inherit;
+}
+
+a.current {
+    color: #8AC6F2;
+}
+
+dt {
+    margin-top: 2px;
+    margin-bottom: 4px;
+    font-weight: bold;
+    color: #ED934C;
+}
+
+dd {
+    margin-top: 2px;
+    margin-bottom: 12px;
+}
+
+div.admonition {
+    margin: 20px 14px;
+    padding: 10px;
+    border-radius: 14px;
+    border: 1px solid #A4A4A4;
+}
+
+p.admonition-title, p.topic-title {
+    font-family: 'Quando', fantasy;
+    font-size: 18px;
+    color: #ED934C;
+    margin-top: 8px;
+}
+
+div.note {
+    background-color: #001F00;
+}
+
+div.important {
+    background-color: #1F0000;
+}
+
+strong, em {
+    color: #e1984a;
+}
+
+img {
+    display: block;
+    max-width: 90% !important;
+    height: auto !important;
+}
+
+div.footer {
+    display: block;
+    width: 100%;
+    float: left;
+    padding: 10px;
+    border-top: solid #2F2F2F 1px;
+    text-align: center;
+    /*border: solid yellow 1px;*/
+}
+
+/* toctree stuff */
+div.sphinxsidebarwrapper > ul {
+    padding-left: 20px;
+    list-style-image: url('section-closed.png');
+}
+
+div.sphinxsidebarwrapper li.toctree-l2 {
+    list-style-image: url('section-empty.png');
+}
+
+div.sphinxsidebarwrapper li.toctree-l1.current {
+    list-style-image: url('section-open.png');
+};
+
+li.current {
+    background-color: #0F0F0F;
+    border-radius: 8px;
+}
+
+div.contents.local {
+    width: 100%;
+    padding: 8px;
+    margin-left: 10px;
+}
+
+/* responsive behavior */
+@media only screen and (min-width: 1199px) {
+    div.bodywrapper {
+        max-width: 76%;
+        float: left;
+    }
+
+    div.contents.local {
+        width: 40%;
+        overflow: auto;
+        border-left: solid #1F1F1F 2px;
+        border-right: solid #1F1F1F 2px;
+        float: right;
+    }
+
+    div.sphinxsidebar {
+        width: 250px;
+        float: right;
+    }
+}
+
+#logodiv {
+    display: inline;
+}
+
+#logoimg {
+    max-height: 32px;
+    width: auto;
+    display: inline;
+}

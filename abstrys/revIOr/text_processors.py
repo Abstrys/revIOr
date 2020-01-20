@@ -65,7 +65,7 @@ class TxtToHtml:
     def get_requirements_html(self):
         return '<p><em>None needed.</em></p>'
 
-    def process_text(self, input_text):
+    def process_text(self, input_text, settings):
         """Converts input_text to HTML."""
         return '<pre>\n%s\n</pre>' % input_text
 
@@ -91,12 +91,18 @@ class RstToHtml(TxtToHtml):
         href="http://docutils.sourceforge.net">docutils</a> package, or set up an external
         processor.</p>"""
 
-    def process_text(self, input_text):
+    def process_text(self, input_text, settings):
         if self.prereq_loaded:
             from docutils.core import publish_string
-            return codecs.decode(publish_string(input_text, writer_name='html'), 'utf-8')
+            stylesheet_path = settings.get('stylesheet', None)
+            overrides = {}
+            if stylesheet_path:
+                overrides['stylesheet_path'] = stylesheet_path
+            return codecs.decode(
+                publish_string(input_text, writer_name='html', settings_overrides=overrides),
+                'utf-8')
         else:
-            return TxtToHTML.process_text(self, input_text)
+            return TxtToHTML.process_text(self, input_text, settings)
 
 
 class MdToHtml(TxtToHtml):
@@ -122,12 +128,12 @@ class MdToHtml(TxtToHtml):
         href="https://github.com/readthedocs/commonmark.py">commonmark</a> Python package, or set up
         an external processor.</p>"""
 
-    def process_text(self, input_text):
+    def process_text(self, input_text, settings):
         if self.prereq_loaded:
             import commonmark
             return commonmark.commonmark(input_text)
         else:
-            return TxtToHTML.process_text(self, input_text)
+            return TxtToHTML.process_text(self, input_text, settings)
 
 # class ExternalProcessorToHtml(TxtToHtml):
 #     """Converts text to HTML using an external processor."""

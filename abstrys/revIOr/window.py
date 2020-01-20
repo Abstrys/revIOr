@@ -77,6 +77,13 @@ class RevIOrWindow(Gtk.Window):
         self.connect('delete_event', self.delete_event)
 
 
+    def get_settings(self):
+        """
+        It's useful for the app (that creates this window) to be able to access the settings, too.
+        """
+        return self.settings
+
+
     def check_stylesheet_dir(self):
         """
         Return the stylesheet directory (either set in settings, or the default).
@@ -275,6 +282,7 @@ class RevIOrWindow(Gtk.Window):
         response = dlg.run()
         if response == Gtk.ResponseType.OK:
             self.settings['stylesheet'] = dlg.get_filename()
+            self.oculus.process_file() # re-render the file.
         dlg.destroy()
 
 

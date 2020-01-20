@@ -88,7 +88,7 @@ class RevIOr:
             print("Couldn't load file... will try again later.")
             return False
 
-        processed_text = self.cur_processor.process_text(file_contents)
+        processed_text = self.cur_processor.process_text(file_contents, self.po_win.get_settings())
         self.po_win.set_contents(processed_text)
         self.po_win.set_title(self.cur_file_path)
         return True
