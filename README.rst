@@ -14,12 +14,41 @@ HTML (via WebKit) by simply saving the file.
 A few default styles are included, but you can substitute your own ``.css`` stylesheets to view the
 output exactly as it would on your website.
 
+It's decidedly *alpha* right now, but it works in a rudimentary way.
+
+@hat's *not* working (yet):
+
+* The *open file* function.  I usually just open the file in my editor *first*, and *then* run
+  revIOr on it.
+
+* I need to create a theme for commonmark-processed Markdown, and my themes could be better.
+
+
+How to install it
+=================
+
+For now, you must install from source if you want to try it. There are also a few prerequisites:
+
+* Python3
+* PyGObject
+* WebKit2 (GTK)
+
+On Fedora, for example, you can run::
+
+     sudo dnf install gobject-introspection python3-gobject \
+       python3-gobject-devel webkit2gtk3
+
+Python's `commonmark` library is necessary to decode Markdown. To install it::
+
+     pip3 install commonmark
+
+
 How to use revIOr
 =================
 
 Start revIOr by either launching it alone or with a filename::
 
-  revIOr <*filename*>
+  revIOr <filename>
 
 Once it is started, you can use the buttons in the toolbar to perform a few useful functions.
 

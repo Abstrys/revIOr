@@ -282,6 +282,7 @@ class RevIOrWindow(Gtk.Window):
         response = dlg.run()
         if response == Gtk.ResponseType.OK:
             self.settings['stylesheet'] = dlg.get_filename()
+            self.settings.save()
             self.oculus.process_file() # re-render the file.
         dlg.destroy()
 
