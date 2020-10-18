@@ -102,9 +102,7 @@ class RevIOrWindow(Gtk.Window):
 
                     
     def close(self):
-        print("close() called!")
         self.settings.save()
-        print("settings saved.")
 
 
     def create_stock_toolbar_button(self, stock_item_id, button_handler,
@@ -237,26 +235,29 @@ class RevIOrWindow(Gtk.Window):
 
 
     def cmd_edit_file(self, widget):
-        print("Edit File button pressed!")
         if self.oculus.cur_file_path == None:
             dlg = Gtk.MessageDialog(self, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Whoah, there.")
             dlg.format_secondary_text("No file is currently loaded! Can't edit nothin'...!")
             dlg.run()
             dlg.destroy()
         else:
-            editor = self.settings.get('text_editor', None)
-            if editor != None:
-                subprocess.call([editor, self.oculus.cur_file_path])
+            editor_cmdline = self.settings.get('text_editor', None)
+            if editor_cmdline != None:
+                editor_cmdline = editor_cmdline.split(' ')
+                for x in range(0, len(editor_cmdline)):
+                    arg_lower = editor_cmdline[x].lower()
+                    if editor_cmdline[x].lower() == '%f':
+                        editor_cmdline[x] = os.path.abspath(self.oculus.cur_file_path)
+                subprocess.Popen(editor_cmdline)
             elif hasattr(os, 'startfile'):
                 os.startfile(self.oculus.cur_file_path)
             elif sys.platform == 'linux':
-                subprocess.call(['xdg-open', self.oculus.cur_file_path])
+                subprocess.run(['xdg-open', self.oculus.cur_file_path], shell=True)
             elif sys.platform == 'darwin':
-                subprocess.call(['open', self.oculus.cur_file_path]) 
+                subprocess.run(['open', self.oculus.cur_file_path], shell=True) 
 
 
     def cmd_show_about(self, widget):
-        print("About button pressed!")
         dlg = Gtk.MessageDialog(self, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "About revIOr")
         dlg.format_secondary_text(ABOUT_TEXT)
         dlg.run()
@@ -264,7 +265,6 @@ class RevIOrWindow(Gtk.Window):
 
 
     def cmd_choose_stylesheet(self, widget):
-        print("Choose Stylesheet button pressed!")
         # if there is a default stylesheet location set, use that. Otherwise, use the default
         # location.
         stylesheet_dir_path = self.check_stylesheet_dir()
@@ -288,18 +288,12 @@ class RevIOrWindow(Gtk.Window):
 
 
     def cmd_set_preferences(self, widget):
-        print("Edit Preferences button pressed!")
         dlg = RevIOrPrefsDialog(self, self.settings)
         response = dlg.run()
-        print("dlg.run() returned")
         if response == Gtk.ResponseType.OK:
-            print("dlg response: OK")
             self.settings = dlg.update_settings()
         else:
-            print("dlg response: *not* OK")
-        dlg.destroy()
-        print("dlg.destroy() called")
-        
+            dlg.destroy()
 
 
     def cmd_zoom_out(self, widget):
@@ -346,15 +340,12 @@ class RevIOrWindow(Gtk.Window):
         This is the last chance to get info about the window before it's destroyed.
         Doing this at close() is too late!
         """
-        print("delete_event() called!")
         if self.settings.get('save_window_pos', False):
            (x, y) = self.get_position()
-           print("saving window position: (%s, %s)" % (x, y))
            self.settings['start_x'] = x
            self.settings['start_y'] = y
         if self.settings.get('save_window_size', False):
            (w, h) = self.get_size() 
-           print("saving window size: (%s, %s)" % (w, h))
            self.settings['start_width'] = w
            self.settings['start_height'] = h
 

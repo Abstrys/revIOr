@@ -27,7 +27,7 @@ I can put a table here:
 What about this?
 ================
 
-This is a level-2 heading.
+This is a level-2 heading. Isn't it great?!
 
 Links are easy to write. Bare links such as https://www.abstrys.com/ will be rendered as hotlinks by
 default.
@@ -36,8 +36,11 @@ default.
 | is a line
 | block.
 
+Another normal paragraph...
+
     This is a quote.
 
+    -- Mustachio Bonsoir
 
 This is more text in the file.
 

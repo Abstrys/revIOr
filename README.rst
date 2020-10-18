@@ -16,12 +16,19 @@ output exactly as it would on your website.
 
 It's decidedly *alpha* right now, but it works in a rudimentary way.
 
-@hat's *not* working (yet):
+What's *not* working (yet):
 
-* The *open file* function.  I usually just open the file in my editor *first*, and *then* run
+* The *open file* function. I usually just open the file in my editor *first*, and *then* run
   revIOr on it.
 
+* When the file is refreshed, the view does not remember what line it was scrolled to. It refreshes
+  the entire window and scrolls back up to the top.
+
 * I need to create a theme for commonmark-processed Markdown, and my themes could be better.
+
+* URLs clicked on the file should be opened in a new window (the user's default browser), and not be
+  loaded in revIOr's view. This defeats the purpose of the app (to provide an auto-updating window
+  of a single file).
 
 
 How to install it
@@ -65,14 +72,20 @@ You can open a new file to view, or open the currently-viewed file in your edito
 
 To open a new file to view:
 
-* Click the open file button.
+* Click the **open file** button.
 
 To open the currently-viewed file in your configured editor:
 
-* Click the edit file button.
+* Click the **edit file** button.
 
 Changing the display
 --------------------
+
+What's still to do
+==================
+
+* Stay scrolled at the same position when refreshing the view.
+* Better control over opening editor window...?
 
 
 .. _joculus: https://github.com/Abstrys/joculus

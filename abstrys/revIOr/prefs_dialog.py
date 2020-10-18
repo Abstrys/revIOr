@@ -11,7 +11,10 @@ class RevIOrPrefsDialog(Gtk.Dialog):
             Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK))
 
         if type(settings) is not AppSettings:
-            print("RevIOrPrefsDialog -- wrong settings object passed!")
+            dlg = Gtk.MessageDialog(self, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Whoah, there.")
+            dlg.format_secondary_text("RevIOrPrefsDialog -- wrong settings object passed!")
+            dlg.run()
+            dlg.destroy()
 
         self.settings = settings
 
@@ -100,6 +103,5 @@ class RevIOrPrefsDialog(Gtk.Dialog):
         self.settings['text_editor'] = self.control_text_editor.get_app_info().get_commandline()
         self.settings['stylesheet_dir'] = self.control_stylesheet_dir.get_filename()
         self.settings.save()
-        print("Updated settings!")
         return self.settings
 
